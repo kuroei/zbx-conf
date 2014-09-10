@@ -12,7 +12,7 @@ json_result = JSON.parse(json_data)
 
 #p json_result['opsworks']['layers']['zabbix']['instances'][]['ip']
 
-ZABBIX_SERVER = json_result['opsworks']['instances']['ip']
+#ZABBIX_SERVER = json_result['opsworks']['instances']['ip']
 #puts ZABBIX_SERVER
 #ZABBIX_API_URL = "http://#{ZABBIX_SERVER}/api_jsonrpc.php"
 ZABBIX_API_URL = "http://127.0.0.1/api_jsonrpc.php"
@@ -34,8 +34,8 @@ ZABBIX_HOSTS_INFO = zbx.hosts.get_full_data(:host => "")
 # ZABBIX_HOSTS_INFO.length
 
 # this one used to get the zabbix_agent_layers
-#zabbix_agent_layers = json_result['zabbix'][layers]
-zabbix_agent_layers = "php-app"
+zabbix_agent_layers = json_result['opsworks']['layers']
+#zabbix_agent_layers = ["php-app","web",""]
 
 # add the all-in-one group
 if zbx.hostgroups.get_id(:name => "all-in-one")==nil
