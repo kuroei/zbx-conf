@@ -12,7 +12,7 @@ json_result = JSON.parse(json_data)
 
 #p json_result['opsworks']['layers']['zabbix']['instances'][]['ip']
 
-ZABBIX_SERVER = json_result['opsworks']['layers']['zabbix']['instances']['auto2cst002']['ip']
+ZABBIX_SERVER = json_result['opsworks']['instances']['ip']
 #puts ZABBIX_SERVER
 ZABBIX_API_URL = "http://#{ZABBIX_SERVER}/api_jsonrpc.php"
 ZABBIX_LOGINID = "admin"
