@@ -17,7 +17,7 @@ ZABBIX_API_URL = "http://#{ZABBIX_SERVER}/api_jsonrpc.php"
 ZABBIX_LOGINID = "admin"
 ZABBIX_PASSWORD = "zabbix"
 
-Chef::Log.info '[zabbix::server]:begin to connet to #{ZABBIX_API_URL}'
+Chef::Log.info 'begin to connet to zabbix server'
 
 zbx = ZabbixApi.connect(:url => ZABBIX_API_URL, :user => ZABBIX_LOGINID, :password => ZABBIX_PASSWORD)
 
@@ -26,7 +26,7 @@ Chef::Log.info '[zabbix::server]:connect success'
 ZABBIX_HOSTS_INFO = zbx.hosts.get_full_data(:host => "")
 
 # this one used to get the zabbix_agent_layers
-#zabbix_agent_layers = json_result['opsworks']['layers']
+zabbix_agent_layers = json_result['opsworks']['layers']
 
 # add the all-in-one group
 if zbx.hostgroups.get_id(:name => "all-in-one")==nil
@@ -38,8 +38,8 @@ layers_all_id = zbx.hostgroups.get_id(:name => "all-in-one")
 Chef::Log.info '[zabbix::server]:inited the all-in-one hostgroup'
 
 json_result['opsworks']['layers'].each do |k,v|
-  #lay_name = k
-  #if zabbix_agent_layers.include?(lay_name)
+  # lay_name = k
+  # if zabbix_agent_layers.include?(lay_name)
         # the lay is the one witch we want to add
         # if not exited
         if zbx.hostgroups.get_id(:name => k)==nil
@@ -84,7 +84,7 @@ json_result['opsworks']['layers'].each do |k,v|
                 # you need delete this server info from the ZABBIX_SERVER_INFO
                 ZABBIX_HOSTS_INFO.delete_if{|x| x['host']==php_app_host}
         end
-  #end
+  # end
 
 end
 
