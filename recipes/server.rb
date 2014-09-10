@@ -10,8 +10,6 @@ json_file_realpath = files_sort[files_sort.length-1]
 json_data = open(json_file_realpath).read
 json_result = JSON.parse(json_data)
 
-#p json_result['opsworks']['layers']['zabbix']['instances'][]['ip']
-
 ZABBIX_SERVER = json_result['opsworks']['instance']['ip']
 #puts ZABBIX_SERVER
 ZABBIX_API_URL = "http://#{ZABBIX_SERVER}/api_jsonrpc.php"
@@ -19,25 +17,16 @@ ZABBIX_API_URL = "http://#{ZABBIX_SERVER}/api_jsonrpc.php"
 ZABBIX_LOGINID = "admin"
 ZABBIX_PASSWORD = "zabbix"
 
-zbx = ZabbixApi.connect(:url => ZABBIX_API_URL, :user => ZABBIX_LOGINID, :password => ZABBIX_PASSWORD)
-#p zbx.hosts.get("output" => "extend")
-#p json_result['opsworks']['layers']['php-app']['instances'].class
+Chef::Log.info '[zabbix::server]:begin to connet to #{ZABBIX_API_URL}'
 
-# need to get all agent-server before doing-json
+zbx = ZabbixApi.connect(:url => ZABBIX_API_URL, :user => ZABBIX_LOGINID, :password => ZABBIX_PASSWORD)
+
+Chef::Log.info '[zabbix::server]:connect success'
 
 ZABBIX_HOSTS_INFO = zbx.hosts.get_full_data(:host => "")
 
-# ZABBIX_HOSTS_INFO.length
-# ZABBIX_HOSTS_INFO[0]['host']=="auto2app303"
-# ZABBIX_HOSTS_INFO[1]['host']=="auto2app303"
-#ABBIX_HOSTS_INFO.delete_if{|x| x['host']=="auto2app303"}
-# ZABBIX_HOSTS_INFO.length
-
 # this one used to get the zabbix_agent_layers
 #zabbix_agent_layers = json_result['opsworks']['layers']
-
-Chef::Log.info '0##########'
-#zabbix_agent_layers = ["php-app","web"]
 
 # add the all-in-one group
 if zbx.hostgroups.get_id(:name => "all-in-one")==nil
@@ -46,7 +35,7 @@ end
 
 layers_all_id = zbx.hostgroups.get_id(:name => "all-in-one")
 
-Chef::Log.info '1##########'
+Chef::Log.info '[zabbix::server]:inited the all-in-one hostgroup'
 
 json_result['opsworks']['layers'].each do |k,v|
   #lay_name = k
@@ -99,10 +88,14 @@ json_result['opsworks']['layers'].each do |k,v|
 
 end
 
-p ZABBIX_HOSTS_INFO.length
+#p ZABBIX_HOSTS_INFO.length
+
+Chef::Log.info '[zabbix::server]:begin to delete the Dead hosts'
 
 ZABBIX_HOSTS_INFO.each do |x|
         zbx.hosts.delete zbx.hosts.get_id(:host => x['host'])
 end
+
+Chef::Log.info '[zabbix::server]:delete hosts success'
 
 #p zbx.hosts.get("output" => "extend")
