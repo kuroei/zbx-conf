@@ -35,6 +35,8 @@ ZABBIX_HOSTS_INFO = zbx.hosts.get_full_data(:host => "")
 
 # this one used to get the zabbix_agent_layers
 #zabbix_agent_layers = json_result['opsworks']['layers']
+
+Chef::Log.info '0##########'
 zabbix_agent_layers = ["php-app","web"]
 
 # add the all-in-one group
