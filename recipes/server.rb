@@ -14,7 +14,8 @@ json_result = JSON.parse(json_data)
 
 ZABBIX_SERVER = json_result['opsworks']['instances']['ip']
 #puts ZABBIX_SERVER
-ZABBIX_API_URL = "http://#{ZABBIX_SERVER}/api_jsonrpc.php"
+#ZABBIX_API_URL = "http://#{ZABBIX_SERVER}/api_jsonrpc.php"
+ZABBIX_API_URL = "http://127.0.0.1/api_jsonrpc.php"
 ZABBIX_LOGINID = "admin"
 ZABBIX_PASSWORD = "zabbix"
 
@@ -42,6 +43,8 @@ if zbx.hostgroups.get_id(:name => "all-in-one")==nil
 end
 
 layers_all_id = zbx.hostgroups.get_id(:name => "all-in-one")
+
+p layers_all_id
 
 json_result['opsworks']['layers'].each do |k,v|
   lay_name = k
