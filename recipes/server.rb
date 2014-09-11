@@ -12,15 +12,11 @@ Chef::Log.info json_file_realpath
 json_data = open(json_file_realpath).read
 json_result = JSON.parse(json_data)
 
-Chef::Log.info '1-------------------------------------'
-
 ZABBIX_SERVER = json_result['opsworks']['instance']['ip']
 #puts ZABBIX_SERVER
 ZABBIX_API_URL = "http://#{ZABBIX_SERVER}/api_jsonrpc.php"
 ZABBIX_LOGINID = "admin"
 ZABBIX_PASSWORD = "zabbix"
-
-
 
 zbx = ZabbixApi.connect(:url => ZABBIX_API_URL, :user => ZABBIX_LOGINID, :password => ZABBIX_PASSWORD)
 #p zbx.hosts.get("output" => "extend")
@@ -40,23 +36,23 @@ ZABBIX_HOSTS_INFO = zbx.hosts.get_full_data(:host => "")
 zabbix_agent_layers = json_result['opsworks']['layers']
 #zabbix_agent_layers = "php-app"
 
-Chef::Log.info '----------------------------2'
-
 # add the all-in-one group
 if zbx.hostgroups.get_id(:name => "all-in-one")==nil
          zbx.hostgroups.create(:name => "all-in-one")
+	 Chef::Log.info 'Zabbix-server: create the hostsgroup [all-in-one]'
 end
 
 layers_all_id = zbx.hostgroups.get_id(:name => "all-in-one")
 
 json_result['opsworks']['layers'].each do |k,v|
- # lay_name = k
+ lay_name = k
  # if zabbix_agent_layers.include?(lay_name)
         # the lay is the one witch we want to add
         # if not exited
         if zbx.hostgroups.get_id(:name => k)==nil
                 #creat the hostgroup for this layer
                 zbx.hostgroups.create(:name => k)
+                Chef::Log.info 'Zabbix-Server:create the hostgroup [#{k}]'
         end
         lay_id = zbx.hostgroups.get_id(:name => k)
         # add the server in this layer
@@ -92,6 +88,8 @@ json_result['opsworks']['layers'].each do |k,v|
                          :hosts_id => [zbx.hosts.get_id(:host => php_app_host)],
                          :templates_id => [10050,10089]
                 )
+   
+                #Chef::Log.info 'Zabbix-server: '
 
                 # you need delete this server info from the ZABBIX_SERVER_INFO
                 ZABBIX_HOSTS_INFO.delete_if{|x| x['host']==php_app_host}
@@ -100,7 +98,6 @@ json_result['opsworks']['layers'].each do |k,v|
 
 end
 
-p ZABBIX_HOSTS_INFO.length
 
 ZABBIX_HOSTS_INFO.each do |x|
         zbx.hosts.delete zbx.hosts.get_id(:host => x['host'])
