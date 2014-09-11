@@ -7,18 +7,20 @@ json_file_path = '/var/lib/niftycloud/automation/chef/'
 files_sort = Dir[json_file_path+"*.json"].sort_by{ |f| File.mtime(f) }
 json_file_realpath = files_sort[files_sort.length-1]
 
-p json_file_realpath
+Chef::Log.info json_file_realpath
 
 json_data = open(json_file_realpath).read
 json_result = JSON.parse(json_data)
 
-#p json_result['opsworks']['layers']['zabbix']['instances'][]['ip']
+Chef::Log.info '1-------------------------------------'
 
 ZABBIX_SERVER = json_result['opsworks']['instance']['ip']
 #puts ZABBIX_SERVER
 ZABBIX_API_URL = "http://#{ZABBIX_SERVER}/api_jsonrpc.php"
 ZABBIX_LOGINID = "admin"
 ZABBIX_PASSWORD = "zabbix"
+
+
 
 zbx = ZabbixApi.connect(:url => ZABBIX_API_URL, :user => ZABBIX_LOGINID, :password => ZABBIX_PASSWORD)
 #p zbx.hosts.get("output" => "extend")
@@ -37,6 +39,8 @@ ZABBIX_HOSTS_INFO = zbx.hosts.get_full_data(:host => "")
 # this one used to get the zabbix_agent_layers
 zabbix_agent_layers = json_result['opsworks']['layers']
 #zabbix_agent_layers = "php-app"
+
+Chef::Log.info '----------------------------2'
 
 # add the all-in-one group
 if zbx.hostgroups.get_id(:name => "all-in-one")==nil
