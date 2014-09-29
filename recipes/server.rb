@@ -52,7 +52,6 @@ json_result['opsworks']['layers'].each do |k,v|
         if zbx.hostgroups.get_id(:name => k)==nil
                 #creat the hostgroup for this layer
                 zbx.hostgroups.create(:name => k)
-                #Chef::Log.info 'Zabbix-Server:create the hostgroup [#{k}]'
         end
         lay_id = zbx.hostgroups.get_id(:name => k)
         # add the server in this layer
@@ -76,13 +75,16 @@ json_result['opsworks']['layers'].each do |k,v|
                 ],
                 :groups => [
                         {
-                        :groupid => lay_id
+                          :groupid => lay_id
                         },
                         {
-                        :groupid => layers_all_id
+                          :groupid => layers_all_id
                         }
                 ]
                 )
+               
+		Chef::Log.info "#{php_app_host}->#{lay_id},#{layers_all_id}" 
+                p "#{php_app_host}->#{lay_id},#{layers_all_id}"
 
                 zbx.templates.mass_add(
                          :hosts_id => [zbx.hosts.get_id(:host => php_app_host)],
