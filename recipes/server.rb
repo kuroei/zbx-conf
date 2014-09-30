@@ -74,9 +74,9 @@ json_result['opsworks']['layers'].each do |k,v|
                          }
                 ],
                 :groups => [
-                        {
-                          :groupid => layers_all_id
-                        },
+                       # {
+                       #   :groupid => layers_all_id
+                       # },
                         {
                           :groupid => lay_id
                         }
